@@ -163,6 +163,26 @@ struct GPUNoSilhouette {
 
 template<size_t DIM>
 void extractBvhNodes(const std::vector<BvhNode<DIM>>& flatTree,
+                     std::vector<GPUBvhNode>& gpuBvhNodes);
+
+template<size_t DIM>
+void extractSnchNodes(const std::vector<SnchNode<DIM>>& flatTree,
+                      std::vector<GPUSnchNode>& gpuSnchNodes);
+
+void extractLineSegments(const std::vector<LineSegment *>& primitives,
+                         std::vector<GPULineSegment>& gpuLineSegments);
+
+void extractSilhouetteVertices(const std::vector<SilhouetteVertex *>& silhouettes,
+                               std::vector<GPUVertex>& gpuVertices);
+
+void extractTriangles(const std::vector<Triangle *>& primitives,
+                      std::vector<GPUTriangle>& gpuTriangles);
+
+void extractSilhouetteEdges(const std::vector<SilhouetteEdge *>& silhouettes,
+                            std::vector<GPUEdge>& gpuEdges);
+#if defined(FCPW_IMPL)
+template<size_t DIM>
+void extractBvhNodes(const std::vector<BvhNode<DIM>>& flatTree,
                      std::vector<GPUBvhNode>& gpuBvhNodes)
 {
     int nNodes = (int)flatTree.size();
@@ -288,6 +308,7 @@ void extractSilhouetteEdges(const std::vector<SilhouetteEdge *>& silhouettes,
                               hasTwoAdjacentFaces == 1 ? 0 : 1);
     }
 }
+#endif
 
 template<size_t DIM,
          typename NodeType,
@@ -685,6 +706,16 @@ private:
 template<>
 void GPUBvhBuffers::allocate<2>(ComPtr<IDevice>& device, const SceneData<2> *cpuSceneData,
                                 bool allocatePrimitiveData, bool allocateSilhouetteData,
+                                bool allocateNodeData, bool allocateRefitData);
+
+template<>
+void GPUBvhBuffers::allocate<3>(ComPtr<IDevice>& device, const SceneData<3> *cpuSceneData,
+                                bool allocatePrimitiveData, bool allocateSilhouetteData,
+                                bool allocateNodeData, bool allocateRefitData);
+#if defined(FCPW_IMPL)
+template<>
+void GPUBvhBuffers::allocate<2>(ComPtr<IDevice>& device, const SceneData<2> *cpuSceneData,
+                                bool allocatePrimitiveData, bool allocateSilhouetteData,
                                 bool allocateNodeData, bool allocateRefitData)
 {
     if (allocateSilhouetteData) {
@@ -755,6 +786,7 @@ void GPUBvhBuffers::allocate<3>(ComPtr<IDevice>& device, const SceneData<3> *cpu
         }
     }
 }
+#endif
 
 struct GPURay {
     GPURay() {

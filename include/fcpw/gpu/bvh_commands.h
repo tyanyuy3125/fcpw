@@ -7,6 +7,26 @@ namespace fcpw {
 void loadShader(GPUContext& gpuContext,
                 const std::string& shaderModule,
                 const std::string& entryPointName,
+                Shader& shader);
+
+template <typename GPUQueryBuffers>
+void runQueries(GPUContext& gpuContext,
+                const Shader& shader,
+                const GPUBvhBuffers& gpuBvhBuffers,
+                const GPUQueryBuffers& gpuQueryBuffers,
+                std::vector<GPUInteraction>& interactions,
+                int nThreadGroups = 4096,
+                bool printLogs = false);
+
+void runRefit(GPUContext& gpuContext,
+              const Shader& shader,
+              const GPUBvhBuffers& gpuBvhBuffers,
+              bool printLogs = false);
+
+#if defined(FCPW_IMPL)
+void loadShader(GPUContext& gpuContext,
+                const std::string& shaderModule,
+                const std::string& entryPointName,
                 Shader& shader)
 {
     Slang::Result loadComputeProgramResult = shader.loadComputeProgram(
@@ -27,8 +47,8 @@ void runQueries(GPUContext& gpuContext,
                 const GPUBvhBuffers& gpuBvhBuffers,
                 const GPUQueryBuffers& gpuQueryBuffers,
                 std::vector<GPUInteraction>& interactions,
-                int nThreadGroups = 4096,
-                bool printLogs = false)
+                int nThreadGroups,
+                bool printLogs)
 {
     // setup command buffer
     auto commandBuffer = gpuContext.transientHeap->createCommandBuffer();
@@ -100,7 +120,7 @@ void runQueries(GPUContext& gpuContext,
 void runRefit(GPUContext& gpuContext,
               const Shader& shader,
               const GPUBvhBuffers& gpuBvhBuffers,
-              bool printLogs = false)
+              bool printLogs)
 {
     // setup command buffer
     auto commandBuffer = gpuContext.transientHeap->createCommandBuffer();
@@ -145,5 +165,6 @@ void runRefit(GPUContext& gpuContext,
     gpuContext.transientHeap->finish();
     gpuContext.transientHeap->synchronizeAndReset();
 }
+#endif
 
 } // namespace fcpw

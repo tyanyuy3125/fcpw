@@ -295,6 +295,7 @@ struct ShaderCursor
     ShaderCursor operator[](uint8_t index) const { return getElement((GfxIndex)index); }
 };
 
+#if defined(FCPW_IMPL)
 Result ShaderCursor::getDereferenced(ShaderCursor& outCursor) const
 {
     switch (m_typeLayout->getKind())
@@ -662,5 +663,6 @@ Result ShaderCursor::followPath(const char* path, ShaderCursor& ioCursor)
     ioCursor = cursor;
     return SLANG_OK;
 }
+#endif
 
 } // namespace fcpw
